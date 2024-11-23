@@ -4,65 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>订阅链接生成器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e9ffe9;
+            border: 1px solid #b5deb5;
+            border-radius: 5px;
+            color: #2d7b2d;
+        }
+    </style>
 </head>
 <body>
-    <h1>订阅链接生成器</h1>
-    <form id="subscription-form">
-        <label for="airport-name">机场名称:</label>
-        <input type="text" id="airport-name" required><br><br>
-        
-        <label for="airport-url">机场网址:</label>
-        <input type="text" id="airport-url" required><br><br>
-
-        <button type="submit">生成订阅链接</button>
-    </form>
-
-    <div id="result" style="display: none;">
-        <p><strong>生成的订阅链接:</strong> <span id="subscription-link"></span></p>
-        <p><strong>订阅流量:</strong> <span id="total-traffic"></span></p>
-        <p><strong>已用上行流量:</strong> <span id="used-upload"></span></p>
-        <p><strong>已用下行流量:</strong> <span id="used-download"></span></p>
-        <p><strong>剩余流量:</strong> <span id="remaining-traffic"></span></p>
-        <p><strong>过期时间:</strong> <span id="expire-time"></span></p>
+    <div class="container">
+        <h1>订阅链接生成器</h1>
+        <form id="subscriptionForm">
+            <input type="text" id="airportName" placeholder="机场名称" required>
+            <input type="url" id="airportWebsite" placeholder="机场官网" required>
+            <button type="submit">生成订阅链接</button>
+        </form>
+        <div id="result" class="result" style="display: none;"></div>
     </div>
-
     <script>
-        // 监听表单提交事件
-        document.getElementById("subscription-form").addEventListener("submit", function(e) {
-            e.preventDefault();  // 阻止表单默认提交
+        const form = document.getElementById('subscriptionForm');
+        const resultDiv = document.getElementById('result');
 
-            // 获取用户输入
-            var airportName = document.getElementById("airport-name").value;
-            var airportUrl = document.getElementById("airport-url").value;
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const airportName = document.getElementById('airportName').value;
+            const airportWebsite = document.getElementById('airportWebsite').value;
 
-            // 模拟生成流量数据（这里可以根据需求做更多处理）
-            var totalTraffic = Math.floor(Math.random() * 10 + 1) * 100;  // 100GB - 1000GB
-            var usedUpload = Math.floor(Math.random() * (totalTraffic * 1024 * 1024 * 1024 / 10));  // 随机生成上行流量，最多为总流量的10%
-            var usedDownload = Math.floor(Math.random() * (totalTraffic * 1024 * 1024 * 1024 / 5));  // 随机生成下行流量，最多为总流量的50%
-            var usedTotal = usedUpload + usedDownload;
-            var remainingTraffic = totalTraffic - usedTotal;
-
-            // 设置过期时间，至少30天，最多730天（即2年）
-            var minExpireDays = 30;
-            var maxExpireDays = 730;
-            var expireTimestamp = Math.floor(Date.now() / 1000) + (Math.floor(Math.random() * (maxExpireDays - minExpireDays + 1)) + minExpireDays) * 86400;  // 随机过期时间
-
-            // 模拟 Mocky.io 生成的订阅链接
-            var mockyUrl = "https://mocky.io/v3/" + Math.random().toString(36).substring(7);  // 随机生成链接
-
-            // 格式化时间为年-月-日格式
-            var expireDate = new Date(expireTimestamp * 1000).toLocaleString();
-
-            // 显示生成的订阅链接和流量信息
-            document.getElementById("subscription-link").innerText = mockyUrl;
-            document.getElementById("total-traffic").innerText = totalTraffic + " GB";
-            document.getElementById("used-upload").innerText = (usedUpload / (1024 * 1024 * 1024)).toFixed(2) + " GB";
-            document.getElementById("used-download").innerText = (usedDownload / (1024 * 1024 * 1024)).toFixed(2) + " GB";
-            document.getElementById("remaining-traffic").innerText = (remainingTraffic / (1024 * 1024 * 1024)).toFixed(2) + " GB";
-            document.getElementById("expire-time").innerText = expireDate;
-            
-            // 显示结果区域
-            document.getElementById("result").style.display = "block";
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ airportName, airportWebsite }),
+                });
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.style.display = 'block';
+                    resultDiv.textContent = `生成的订阅链接: ${data.link}`;
+                } else {
+                    resultDiv.style.display = 'block';
+                    resultDiv.textContent = '生成失败，请重试。';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = '服务器错误，请稍后重试。';
+            }
         });
     </script>
 </body>
