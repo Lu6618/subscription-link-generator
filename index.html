@@ -4,63 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>订阅链接生成器</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJx3Z2XzB2DbQzFhw5gV9Nm85wz5V5Kj2f1gk5V0zPj5m5g5ygt1ROzQyK0R" crossorigin="anonymous">
+    <!-- 自定义样式 -->
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f9f9f9;
+            background: #f4f6f9;
+            font-family: 'Arial', sans-serif;
         }
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
+            max-width: 500px;
+            margin-top: 50px;
         }
         h1 {
+            color: #007bff;
+            font-size: 2.5rem;
             text-align: center;
+            margin-bottom: 20px;
         }
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        .form-group {
+            margin-bottom: 15px;
         }
-        button {
+        .btn-submit {
             background-color: #007bff;
+            border-color: #007bff;
             color: #fff;
-            border: none;
-            cursor: pointer;
+            width: 100%;
         }
-        button:hover {
+        .btn-submit:hover {
             background-color: #0056b3;
+            border-color: #0056b3;
         }
         .result {
-            margin-top: 20px;
-            padding: 10px;
-            background: #e9ffe9;
-            border: 1px solid #b5deb5;
+            background-color: #e7f7e7;
+            border: 1px solid #3c763d;
+            color: #3c763d;
+            padding: 15px;
             border-radius: 5px;
-            color: #2d7b2d;
+            margin-top: 20px;
+            display: none;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
         <h1>订阅链接生成器</h1>
         <form id="subscriptionForm">
-            <input type="text" id="airportName" placeholder="机场名称" required>
-            <input type="url" id="airportWebsite" placeholder="机场官网" required>
-            <button type="submit">生成订阅链接</button>
+            <div class="form-group">
+                <label for="airportName">机场名称</label>
+                <input type="text" class="form-control" id="airportName" placeholder="请输入机场名称" required>
+            </div>
+            <div class="form-group">
+                <label for="airportWebsite">机场官网</label>
+                <input type="url" class="form-control" id="airportWebsite" placeholder="请输入机场官网链接" required>
+            </div>
+            <button type="submit" class="btn btn-submit">生成订阅链接</button>
         </form>
-        <div id="result" class="result" style="display: none;"></div>
+
+        <div id="result" class="result mt-3">
+            <strong>生成的订阅链接:</strong>
+            <p id="generatedLink"></p>
+        </div>
     </div>
+
+    <!-- 引入 Bootstrap JS 和 Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybC6p5Hg4o8p4k2VKjRr+/NmD2b1UlQ9p6Bmbw7d5F5y0k0kV" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0rE5NeELzH8p1y0f4d/tnmbHEP3z7jXbSyyQuOd2vPfov6Ge" crossorigin="anonymous"></script>
+
     <script>
         const form = document.getElementById('subscriptionForm');
         const resultDiv = document.getElementById('result');
+        const generatedLink = document.getElementById('generatedLink');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -78,15 +93,21 @@
                 const data = await response.json();
                 if (data.success) {
                     resultDiv.style.display = 'block';
-                    resultDiv.textContent = `生成的订阅链接: ${data.link}`;
+                    generatedLink.textContent = data.link;
+                    resultDiv.classList.remove('alert-danger');
+                    resultDiv.classList.add('alert-success');
                 } else {
                     resultDiv.style.display = 'block';
-                    resultDiv.textContent = '生成失败，请重试。';
+                    generatedLink.textContent = '生成失败，请重试。';
+                    resultDiv.classList.remove('alert-success');
+                    resultDiv.classList.add('alert-danger');
                 }
             } catch (error) {
                 console.error('Error:', error);
                 resultDiv.style.display = 'block';
-                resultDiv.textContent = '服务器错误，请稍后重试。';
+                generatedLink.textContent = '服务器错误，请稍后重试。';
+                resultDiv.classList.remove('alert-success');
+                resultDiv.classList.add('alert-danger');
             }
         });
     </script>
