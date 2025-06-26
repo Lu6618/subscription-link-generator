@@ -25,8 +25,8 @@
       text-align: center;
     }
     .info {
-      font-size: 0.9rem;
-      color: #555;
+      font-size: 1rem;
+      color: #333;
       margin-bottom: 1rem;
     }
     .car-image {
@@ -70,13 +70,12 @@
 </head>
 <body>
   <div class="card">
-    <!-- 顶部信息 -->
-    <div class="info" id="datetime">加载中...</div>
-    <div class="info" id="ipinfo">正在获取 IP 信息...</div>
-    <div class="info" id="weather">正在获取天气...</div>
+    <!-- 位置信息 -->
+    <div class="info" id="location">正在获取位置...</div>
+    <div class="info" id="weather">正在获取天气信息...</div>
 
     <!-- 车辆图像 -->
-    <img id="car-image" class="car-image" src="car.png" alt="车辆照片">
+    <img class="car-image" src="car.png" alt="车辆照片">
 
     <!-- 车牌 -->
     <div class="plate" id="plate-number">苏U·5WX81</div>
@@ -85,7 +84,7 @@
     <div class="message">您好，您的车辆影响通行，请尽快挪车，谢谢配合！</div>
 
     <!-- 一键拨号 -->
-    <a id="call-link" class="call-button" href="tel:13800138000">📞 一键联系车主</a>
+    <a class="call-button" id="call-link" href="tel:13800138000">📞 一键联系车主</a>
   </div>
 
   <script>
@@ -96,44 +95,57 @@
     document.getElementById("plate-number").innerText = plate;
     document.getElementById("call-link").href = "tel:" + phone;
 
-    // 显示当前时间
-    function updateTime() {
-      const now = new Date();
-      const formatted = now.toLocaleString("zh-CN", {
-        hour12: false,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-      document.getElementById("datetime").innerText = "当前时间：" + formatted;
-    }
-    updateTime();
-
-    // 获取 IP 和地理位置
+    // 获取 IP 和地理位置（中文格式）
     fetch("https://api.ip.sb/geoip")
       .then(res => res.json())
       .then(data => {
-        const { ip, country, region, city, latitude, longitude } = data;
-        document.getElementById("ipinfo").innerText = `IP：${ip} | 来自：${country} ${region} ${city}`;
+        const country = data.country || "";
+        const region = data.region || "";
+        const city = data.city || "";
+        const latitude = data.latitude;
+        const longitude = data.longitude;
+        const locationText = `📍 您所在位置：${country}${region}${city}`;
+        document.getElementById("location").innerText = locationText;
 
-        // 获取天气
+        // 获取天气信息
         fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`)
           .then(res => res.json())
           .then(weather => {
-            const temp = weather.current_weather.temperature;
-            const wind = weather.current_weather.windspeed;
+            const w = weather.current_weather;
+            const temp = w.temperature;
+            const wind = w.windspeed;
+            const code = w.weathercode;
+
+            // 简单的天气代码转中文描述
+            const weatherMap = {
+              0: "晴",
+              1: "主要晴",
+              2: "局部多云",
+              3: "阴",
+              45: "雾",
+              48: "霜雾",
+              51: "小雨",
+              53: "中雨",
+              55: "大雨",
+              61: "小阵雨",
+              63: "中阵雨",
+              65: "大阵雨",
+              71: "小雪",
+              73: "中雪",
+              75: "大雪",
+              95: "雷雨"
+            };
+            const desc = weatherMap[code] || "天气未知";
+
             document.getElementById("weather").innerText =
-              `天气：${temp}°C，风速 ${wind} km/h`;
+              `🌤 当前天气：${desc}，${temp}°C，风速 ${wind}km/h`;
           })
           .catch(() => {
             document.getElementById("weather").innerText = "天气信息获取失败";
           });
       })
       .catch(() => {
-        document.getElementById("ipinfo").innerText = "IP 信息获取失败";
+        document.getElementById("location").innerText = "位置获取失败";
         document.getElementById("weather").innerText = "天气信息获取失败";
       });
   </script>
