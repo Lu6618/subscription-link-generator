@@ -2,96 +2,141 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>智能挪车联系页</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto+Mono&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>挪车联系页 - 科技风</title>
   <style>
-    html, body {
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+    body {
       margin: 0;
-      padding: 0;
-      font-family: 'Roboto Mono', monospace;
-      background: #0a0f1a;
-      color: #00eaff;
-      height: 100vh;
-      overflow: hidden;
-    }
-    canvas#particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 0;
+      font-family: 'Orbitron', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #00fff7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
     }
     .card {
-      position: relative;
-      z-index: 1;
-      max-width: 420px;
-      margin: auto;
-      margin-top: 5vh;
-      background: rgba(10, 15, 30, 0.9);
-      border: 2px solid #00eaff;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0, 234, 255, 0.5);
+      background: rgba(10, 30, 50, 0.75);
+      border-radius: 20px;
       padding: 2rem;
-      text-align: center;
-    }
-    .car-image {
+      max-width: 400px;
       width: 100%;
-      border-radius: 12px;
-      border: 2px solid #00eaff;
+      box-shadow:
+        0 0 10px #00fff7,
+        0 0 30px #00fff7 inset;
+      text-align: center;
+      border: 1px solid #00fff7;
+      position: relative;
+      overflow: hidden;
+    }
+    .blinker {
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: #00fff7;
+      text-shadow:
+        0 0 5px #00fff7,
+        0 0 10px #00fff7,
+        0 0 20px #00fff7;
+      animation: blink 1.2s infinite;
       margin-bottom: 1rem;
+      letter-spacing: 2px;
+    }
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.3; }
     }
     .plate {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2rem;
+      background: linear-gradient(90deg, #00fff7, #00838f);
+      color: #002021;
+      font-size: 2.2rem;
+      font-weight: 900;
+      padding: 0.3rem 1rem;
+      border-radius: 12px;
       letter-spacing: 4px;
-      background-color: #001f3f;
-      color: #00eaff;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      box-shadow: inset 0 0 10px #00eaff;
+      box-shadow:
+        0 0 8px #00fff7,
+        inset 0 0 10px #004c52;
       margin-bottom: 1rem;
+      user-select: none;
     }
-    .info, .message, .time {
-      margin: 1rem 0;
-      color: #cfefff;
+    #weather {
+      font-size: 1rem;
+      margin-bottom: 1.2rem;
+      color: #66f8ff;
+      text-shadow: 0 0 5px #00fff7;
+    }
+    #location {
+      font-size: 1rem;
+      margin-bottom: 0.6rem;
+      color: #99ffff;
+      user-select: none;
+    }
+    #time-now {
+      font-size: 1rem;
+      color: #77e1ff;
+      margin-bottom: 1rem;
+      user-select: none;
     }
     .call-button {
       display: inline-block;
-      background-color: #00eaff;
-      color: #0a0f1a;
+      background: linear-gradient(90deg, #00fff7, #00838f);
+      color: #002021;
+      font-weight: 700;
       font-size: 1.2rem;
-      padding: 0.75rem 2rem;
-      border-radius: 8px;
+      padding: 0.8rem 2rem;
+      border-radius: 14px;
       text-decoration: none;
-      transition: transform 0.2s ease;
-      font-weight: bold;
+      box-shadow:
+        0 0 15px #00fff7;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
     }
     .call-button:hover {
-      transform: scale(1.05);
-      background-color: #00b0d4;
+      background: linear-gradient(90deg, #00b8cc, #005960);
+      box-shadow:
+        0 0 25px #00fff7,
+        0 0 40px #00fff7 inset;
+      color: #e0f7fa;
     }
-    .tip {
-      font-size: 0.85rem;
-      color: #888;
-      margin-top: 1rem;
+    .car-image {
+      max-width: 100%;
+      margin: 1rem 0 1.5rem;
+      border-radius: 16px;
+      border: 2px solid #00fff7;
+      box-shadow: 0 0 20px #00fff7;
+      user-select: none;
+    }
+    #map-link {
+      color: #00e0ff;
+      text-decoration: underline;
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 1.5rem;
+      user-select: none;
+    }
+    #map-link:hover {
+      color: #0099aa;
     }
   </style>
 </head>
 <body>
-  <canvas id="particles"></canvas>
-
   <div class="card">
-    <div class="info" id="location">📍 正在定位...</div>
-    <div class="info" id="weather">☁️ 正在获取天气...</div>
-    <div class="time" id="time">🕒 当前时间加载中...</div>
-    <img class="car-image" src="car.png" alt="车辆照片">
+    <div class="blinker">⚠️ 车辆影响通行，请尽快挪车 ⚠️</div>
+    <div id="location">正在定位...</div>
+    <a id="map-link" href="#" target="_blank" rel="noopener">📍 查看地图</a>
+    <div id="weather">正在获取天气...</div>
+    <img class="car-image" src="car.png" alt="车辆照片" />
     <div class="plate" id="plate-number">苏U·5WX81</div>
-    <div class="message">您好，您的车辆影响通行，请尽快挪车，谢谢配合！</div>
+    <div class="message" style="color:#66f8ff; margin-bottom: 2rem;">
+      您好，您的车辆影响通行，请尽快挪车，谢谢配合！
+    </div>
     <a class="call-button" id="call-link" href="tel:13800138000">📞 一键联系车主</a>
-    <div class="tip">👆 点击页面可开启背景音乐</div>
+    <div id="time-now"></div>
   </div>
-
-  <audio id="bg-music" src="music.mp3" autoplay loop muted></audio>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
@@ -100,106 +145,98 @@
     document.getElementById("plate-number").innerText = plate;
     document.getElementById("call-link").href = "tel:" + phone;
 
-    // 当前时间
+    // 定位和地图链接
+    fetch("https://api.ip.sb/geoip")
+      .then(res => res.json())
+      .then(data => {
+        const zhMap = {
+          "China": "中国",
+          "Jiangsu": "江苏省",
+          "Suzhou": "苏州市",
+          "Beijing": "北京市",
+          "Shanghai": "上海市",
+          "Guangdong": "广东省",
+          "Guangzhou": "广州市",
+          "Shenzhen": "深圳市"
+        };
+        function toZh(name) {
+          return zhMap[name] || name;
+        }
+        const region = toZh(data.region);
+        const city = toZh(data.city);
+        document.getElementById("location").innerText = `${region}${city}`;
+        document.getElementById("map-link").href = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
+
+        // 获取天气
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${data.latitude}&longitude=${data.longitude}&current_weather=true`)
+          .then(res => res.json())
+          .then(weather => {
+            const w = weather.current_weather;
+            const temp = w.temperature;
+            const wind = w.windspeed;
+            const code = w.weathercode;
+
+            const weatherMap = {
+              0: "晴",
+              1: "主要晴",
+              2: "局部多云",
+              3: "阴",
+              45: "雾",
+              48: "霜雾",
+              51: "小雨",
+              53: "中雨",
+              55: "大雨",
+              61: "小阵雨",
+              63: "中阵雨",
+              65: "大阵雨",
+              71: "小雪",
+              73: "中雪",
+              75: "大雪",
+              95: "雷雨"
+            };
+
+            const weatherEmojis = {
+              0: "☀️",
+              1: "🌤️",
+              2: "⛅",
+              3: "☁️",
+              45: "🌫️",
+              48: "🌁",
+              51: "🌧️",
+              53: "🌧️",
+              55: "🌧️",
+              61: "🌦️",
+              63: "🌦️",
+              65: "⛈️",
+              71: "🌨️",
+              73: "❄️",
+              75: "❄️",
+              95: "🌩️"
+            };
+
+            const desc = weatherMap[code] || "未知天气";
+            const emoji = weatherEmojis[code] || "🌈";
+            document.getElementById("weather").innerText = `${emoji} ${desc}，${temp}°C，风速 ${wind}km/h`;
+          })
+          .catch(() => {
+            document.getElementById("weather").innerText = "天气信息获取失败";
+          });
+      })
+      .catch(() => {
+        document.getElementById("location").innerText = "位置获取失败";
+        document.getElementById("weather").innerText = "天气信息获取失败";
+      });
+
+    // 当前时间显示
     function updateTime() {
       const now = new Date();
-      const timeStr = now.toLocaleString("zh-CN", { hour12: false });
-      document.getElementById("time").innerText = "🕒 当前时间：" + timeStr;
+      const h = now.getHours().toString().padStart(2, '0');
+      const m = now.getMinutes().toString().padStart(2, '0');
+      const s = now.getSeconds().toString().padStart(2, '0');
+      document.getElementById("time-now").innerText = `当前时间：${h}:${m}:${s}`;
     }
+    setInterval(updateTime, 1000);
     updateTime();
-    setInterval(updateTime, 60000);
-
-    // 音乐播放
-    const bgMusic = document.getElementById("bg-music");
-    document.body.addEventListener("click", () => {
-      bgMusic.muted = false;
-      bgMusic.play();
-    });
-
-    // 地理定位逻辑
-    const zhMap = {
-      "China": "中国", "Jiangsu": "江苏省", "Suzhou": "苏州市", "Nanjing": "南京市",
-      "Beijing": "北京市", "Shanghai": "上海市", "Guangdong": "广东省", "Guangzhou": "广州市", "Shenzhen": "深圳市"
-    };
-    function toZh(name) {
-      return zhMap[name] || name;
-    }
-
-    function fetchWeather(lat, lon) {
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
-        .then(res => res.json())
-        .then(data => {
-          const w = data.current_weather;
-          const weatherMap = {
-            0: "☀️ 晴", 1: "🌤 主要晴", 2: "⛅ 局部多云", 3: "☁️ 阴",
-            45: "🌫 雾", 48: "🌁 霜雾", 51: "🌦 小雨", 53: "🌧 中雨",
-            55: "🌧 大雨", 61: "🌦 小阵雨", 63: "🌧 中阵雨", 65: "🌧 大阵雨",
-            71: "🌨 小雪", 73: "🌨 中雪", 75: "❄️ 大雪", 95: "⛈ 雷雨"
-          };
-          const desc = weatherMap[w.weathercode] || "天气未知";
-          document.getElementById("weather").innerText =
-            `${desc}，${w.temperature}°C，风速 ${w.windspeed}km/h`;
-        })
-        .catch(() => {
-          document.getElementById("weather").innerText = "天气信息获取失败";
-        });
-    }
-
-    function geoByAmap() {
-      const script = document.createElement("script");
-      script.src = "https://restapi.amap.com/v3/ip?key=8b262d1641d61679eacb588a270dc7c0&callback=amapCallback";
-      document.body.appendChild(script);
-    }
-
-    function amapCallback(res) {
-      if (res && res.city && res.adcode) {
-        const loc = `${res.province || ""}${res.city || ""}`;
-        document.getElementById("location").innerText = loc;
-        fetchWeather(res.rectangle.split(";")[0].split(",")[1], res.rectangle.split(";")[0].split(",")[0]);
-      } else {
-        geoByIP(); // fallback
-      }
-    }
-
-    function geoByIP() {
-      fetch("https://api.ip.sb/geoip")
-        .then(res => res.json())
-        .then(data => {
-          const region = toZh(data.region);
-          const city = toZh(data.city);
-          document.getElementById("location").innerText = `${region}${city}`;
-          fetchWeather(data.latitude, data.longitude);
-        })
-        .catch(() => {
-          document.getElementById("location").innerText = "位置获取失败";
-          document.getElementById("weather").innerText = "天气信息获取失败";
-        });
-    }
-
-    geoByAmap(); // start with AMap
-  </script>
-
-  <!-- 粒子背景效果 -->
-  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-  <script>
-    particlesJS("particles", {
-      particles: {
-        number: { value: 50 }, color: { value: "#00eaff" },
-        shape: { type: "circle" },
-        opacity: { value: 0.5 },
-        size: { value: 3 },
-        line_linked: {
-          enable: true,
-          distance: 150,
-          color: "#00eaff",
-          opacity: 0.4,
-          width: 1
-        },
-        move: { enable: true, speed: 2 }
-      },
-      interactivity: { detect_on: "canvas", events: { onhover: { enable: false } } },
-      retina_detect: true
-    });
   </script>
 </body>
 </html>
