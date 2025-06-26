@@ -3,62 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>挪车通知</title>
+  <title>挪车联系页</title>
   <style>
     body {
+      margin: 0;
       font-family: "Helvetica Neue", sans-serif;
-      background: #f5f5f5;
-      text-align: center;
+      background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       padding: 2rem;
+      min-height: 100vh;
     }
-    .container {
-      background: #fff;
-      border-radius: 12px;
+    .card {
+      background-color: white;
+      border-radius: 16px;
       padding: 2rem;
-      max-width: 480px;
-      margin: 2rem auto;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+    .car-image {
+      width: 100%;
+      border-radius: 12px;
+      object-fit: contain;
+      margin-bottom: 1.5rem;
+      border: 2px solid #00bcd4;
     }
     .plate {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: bold;
+      margin-bottom: 0.5rem;
       color: #333;
-      margin-bottom: 1rem;
     }
-    .info {
-      font-size: 1.2rem;
+    .message {
+      font-size: 1rem;
+      color: #555;
       margin-bottom: 1.5rem;
     }
     .call-button {
       display: inline-block;
-      background-color: #007aff;
+      background-color: #00bcd4;
       color: white;
       font-size: 1.2rem;
       padding: 0.75rem 2rem;
-      border-radius: 8px;
+      border-radius: 10px;
       text-decoration: none;
       transition: background-color 0.2s ease;
     }
     .call-button:hover {
-      background-color: #005bb5;
+      background-color: #0097a7;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="card">
+    <img id="car-image" class="car-image" src="car.png" alt="车辆照片">
     <div class="plate">🚗 车牌号：<span id="plate-number">粤A88888</span></div>
-    <div class="info">您好，您的车辆影响通行，请尽快挪车，谢谢配合！</div>
-    <a id="call-link" class="call-button" href="tel:13800138000">📞 一键拨打车主</a>
+    <div class="message">您好，您的车辆影响通行，请尽快挪车，谢谢配合！</div>
+    <a id="call-link" class="call-button" href="tel:13800138000">📞 一键联系车主</a>
   </div>
 
   <script>
-    // 支持通过 URL 参数自定义车牌号和电话，例如 ?plate=沪B12345&phone=13912345678
     const urlParams = new URLSearchParams(window.location.search);
-    const plate = urlParams.get('plate') || '粤A88888';
-    const phone = urlParams.get('phone') || '13800138000';
+    const plate = urlParams.get("plate") || "粤A88888";
+    const phone = urlParams.get("phone") || "13800138000";
 
-    document.getElementById('plate-number').innerText = plate;
-    document.getElementById('call-link').href = 'tel:' + phone;
+    document.getElementById("plate-number").innerText = plate;
+    document.getElementById("call-link").href = "tel:" + phone;
   </script>
 </body>
 </html>
