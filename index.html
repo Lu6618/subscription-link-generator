@@ -76,7 +76,7 @@
     <div class="plate" id="plate-number">苏U·5WX81</div>
     <div class="message">您好，如果停车位置影响到您正常出行，</div>
     <div class="message">请点击下方按钮联系我。</div>
-    <a class="call-button" id="call-link" href="tel:120">📞 联系车主</a>
+    <a class="call-button" id="call-link" href="tel:18917034936">📞 联系车主</a>
   </div>
 
   <script>
@@ -84,7 +84,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const plate = urlParams.get("plate") || "苏U·5WX81";
-    const phone = urlParams.get("phone") || "120";
+    const phone = urlParams.get("phone") || "18917034936";
     document.getElementById("plate-number").innerText = plate;
     document.getElementById("call-link").href = "tel:" + phone;
 
