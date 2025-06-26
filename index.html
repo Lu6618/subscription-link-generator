@@ -89,11 +89,10 @@
   </div>
 
   <script>
-    // 获取 URL 参数
+    // 设置车牌和电话
     const urlParams = new URLSearchParams(window.location.search);
     const plate = urlParams.get("plate") || "苏U·5WX81";
     const phone = urlParams.get("phone") || "13800138000";
-
     document.getElementById("plate-number").innerText = plate;
     document.getElementById("call-link").href = "tel:" + phone;
 
@@ -113,16 +112,15 @@
     }
     updateTime();
 
-    // 获取 IP 和城市
-    fetch("https://ip-api.com/json/?lang=zh-CN")
+    // 获取 IP 和地理位置
+    fetch("https://api.ip.sb/geoip")
       .then(res => res.json())
       .then(data => {
-        const { query, country, regionName, city, lat, lon } = data;
-        document.getElementById("ipinfo").innerText =
-          `IP：${query} | 来自：${country} ${regionName} ${city}`;
+        const { ip, country, region, city, latitude, longitude } = data;
+        document.getElementById("ipinfo").innerText = `IP：${ip} | 来自：${country} ${region} ${city}`;
 
-        // 获取天气信息（使用 Open-Meteo）
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+        // 获取天气
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`)
           .then(res => res.json())
           .then(weather => {
             const temp = weather.current_weather.temperature;
@@ -136,6 +134,7 @@
       })
       .catch(() => {
         document.getElementById("ipinfo").innerText = "IP 信息获取失败";
+        document.getElementById("weather").innerText = "天气信息获取失败";
       });
   </script>
 </body>
