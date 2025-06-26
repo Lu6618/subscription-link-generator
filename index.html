@@ -79,13 +79,13 @@
   </div>
 
   <script>
+    const key = "8b262d1641d61679eacb588a270dc7c0";
+
     const urlParams = new URLSearchParams(window.location.search);
     const plate = urlParams.get("plate") || "苏U·5WX81";
     const phone = urlParams.get("phone") || "13800138000";
     document.getElementById("plate-number").innerText = plate;
     document.getElementById("call-link").href = "tel:" + phone;
-
-    const key = "8b262d1641d61679eacb588a270dc7c0";
 
     const weatherMap = {
       0: "晴", 1: "主要晴", 2: "局部多云", 3: "阴", 45: "雾", 48: "霜雾",
@@ -96,50 +96,59 @@
       95: "雷暴", 96: "轻度雷暴冰雹", 99: "强雷暴冰雹"
     };
 
-    function fetchAddressFromCoords(lat, lon) {
-      const amapUrl = `https://restapi.amap.com/v3/geocode/regeo?output=json&location=${lon},${lat}&key=${key}&extensions=base`;
-      return fetch(amapUrl)
+    function updateLocationAndWeather(lat, lon) {
+      const amapUrl = `https://restapi.amap.com/v3/geocode/regeo?output=json&location=${lon},${lat}&key=${key}`;
+      fetch(amapUrl)
         .then(res => res.json())
         .then(data => {
-          if (data.status === "1") {
-            const province = data.regeocode.addressComponent.province || "";
-            const city = data.regeocode.addressComponent.city || "";
-            return province + (city || "");
-          }
-          return "未知地区";
+          const comp = data.regeocode.addressComponent;
+          const location = comp.province + (comp.city || "") + (comp.district || "");
+          document.getElementById("location").innerText = location;
         })
-        .catch(() => "未知地区");
-    }
-
-    fetch("https://api.ip.sb/geoip")
-      .then(res => res.json())
-      .then(data => {
-        const lat = data.latitude;
-        const lon = data.longitude;
-
-        fetchAddressFromCoords(lat, lon).then(locationZh => {
-          document.getElementById("location").innerText = locationZh;
+        .catch(() => {
+          document.getElementById("location").innerText = "位置获取失败";
         });
 
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
-          .then(res => res.json())
-          .then(weather => {
-            const w = weather.current_weather;
-            const temp = w.temperature;
-            const wind = w.windspeed;
-            const code = w.weathercode;
-            const desc = weatherMap[code] || "天气未知";
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+        .then(res => res.json())
+        .then(data => {
+          const w = data.current_weather;
+          const desc = weatherMap[w.weathercode] || "天气未知";
+          document.getElementById("weather").innerText = `${desc}，${w.temperature}°C，风速 ${w.windspeed}km/h`;
+        })
+        .catch(() => {
+          document.getElementById("weather").innerText = "天气信息获取失败";
+        });
+    }
 
-            document.getElementById("weather").innerText = `${desc}，${temp}°C，风速 ${wind}km/h`;
-          })
-          .catch(() => {
-            document.getElementById("weather").innerText = "天气信息获取失败";
-          });
-      })
-      .catch(() => {
-        document.getElementById("location").innerText = "位置获取失败";
-        document.getElementById("weather").innerText = "天气信息获取失败";
-      });
+    function useGPS() {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          updateLocationAndWeather(lat, lon);
+        },
+        err => {
+          console.warn("GPS定位失败，使用IP定位：", err.message);
+          useIPFallback();
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    }
+
+    function useIPFallback() {
+      fetch("https://api.ip.sb/geoip")
+        .then(res => res.json())
+        .then(data => {
+          updateLocationAndWeather(data.latitude, data.longitude);
+        })
+        .catch(() => {
+          document.getElementById("location").innerText = "位置获取失败";
+          document.getElementById("weather").innerText = "天气信息获取失败";
+        });
+    }
+
+    useGPS();
   </script>
 </body>
 </html>
