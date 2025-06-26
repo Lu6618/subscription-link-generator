@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -86,43 +85,51 @@
     document.getElementById("plate-number").innerText = plate;
     document.getElementById("call-link").href = "tel:" + phone;
 
-    const zhMap = {
-      "China": "中国",
-      "Jiangsu": "江苏省",
-      "Suzhou": "苏州市",
-      "Beijing": "北京市",
-      "Shanghai": "上海市",
-      "Guangdong": "广东省",
-      "Guangzhou": "广州市",
-      "Shenzhen": "深圳市"
+    const key = "8b262d1641d61679eacb588a270dc7c0";
+
+    const weatherMap = {
+      0: "晴", 1: "主要晴", 2: "局部多云", 3: "阴", 45: "雾", 48: "霜雾",
+      51: "细雨", 53: "中雨", 55: "大雨", 56: "冻雨", 57: "冻雨",
+      61: "小阵雨", 63: "中阵雨", 65: "大阵雨", 66: "冻阵雨", 67: "冻阵雨",
+      71: "小雪", 73: "中雪", 75: "大雪", 77: "冰粒",
+      80: "阵雨", 81: "强阵雨", 82: "雷阵雨", 85: "小雪", 86: "大雪",
+      95: "雷暴", 96: "轻度雷暴冰雹", 99: "强雷暴冰雹"
     };
 
-    function toZh(name) {
-      return zhMap[name] || name;
+    function fetchAddressFromCoords(lat, lon) {
+      const amapUrl = `https://restapi.amap.com/v3/geocode/regeo?output=json&location=${lon},${lat}&key=${key}&extensions=base`;
+      return fetch(amapUrl)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "1") {
+            const province = data.regeocode.addressComponent.province || "";
+            const city = data.regeocode.addressComponent.city || "";
+            return province + (city || "");
+          }
+          return "未知地区";
+        })
+        .catch(() => "未知地区");
     }
 
     fetch("https://api.ip.sb/geoip")
       .then(res => res.json())
       .then(data => {
-        const region = toZh(data.region);
-        const city = toZh(data.city);
-        document.getElementById("location").innerText = `${region}${city}`;
+        const lat = data.latitude;
+        const lon = data.longitude;
 
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${data.latitude}&longitude=${data.longitude}&current_weather=true`)
+        fetchAddressFromCoords(lat, lon).then(locationZh => {
+          document.getElementById("location").innerText = locationZh;
+        });
+
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
           .then(res => res.json())
           .then(weather => {
             const w = weather.current_weather;
             const temp = w.temperature;
             const wind = w.windspeed;
             const code = w.weathercode;
-
-            const weatherMap = {
-              0: "晴", 1: "主要晴", 2: "局部多云", 3: "阴",
-              45: "雾", 48: "霜雾", 51: "小雨", 53: "中雨",
-              55: "大雨", 61: "小阵雨", 63: "中阵雨", 65: "大阵雨",
-              71: "小雪", 73: "中雪", 75: "大雪", 95: "雷雨"
-            };
             const desc = weatherMap[code] || "天气未知";
+
             document.getElementById("weather").innerText = `${desc}，${temp}°C，风速 ${wind}km/h`;
           })
           .catch(() => {
