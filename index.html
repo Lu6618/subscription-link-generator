@@ -1,115 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>订阅链接生成器</title>
-    <!-- 引入 Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJx3Z2XzB2DbQzFhw5gV9Nm85wz5V5Kj2f1gk5V0zPj5m5g5ygt1ROzQyK0R" crossorigin="anonymous">
-    <!-- 自定义样式 -->
-    <style>
-        body {
-            background: #f4f6f9;
-            font-family: 'Arial', sans-serif;
-        }
-        .container {
-            max-width: 500px;
-            margin-top: 50px;
-        }
-        h1 {
-            color: #007bff;
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .btn-submit {
-            background-color: #007bff;
-            border-color: #007bff;
-            color: #fff;
-            width: 100%;
-        }
-        .btn-submit:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-        .result {
-            background-color: #e7f7e7;
-            border: 1px solid #3c763d;
-            color: #3c763d;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>挪车通知</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", sans-serif;
+      background: #f5f5f5;
+      text-align: center;
+      padding: 2rem;
+    }
+    .container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 480px;
+      margin: 2rem auto;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    }
+    .plate {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+    .info {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    .call-button {
+      display: inline-block;
+      background-color: #007aff;
+      color: white;
+      font-size: 1.2rem;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background-color 0.2s ease;
+    }
+    .call-button:hover {
+      background-color: #005bb5;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div class="plate">🚗 车牌号：<span id="plate-number">粤A88888</span></div>
+    <div class="info">您好，您的车辆影响通行，请尽快挪车，谢谢配合！</div>
+    <a id="call-link" class="call-button" href="tel:13800138000">📞 一键拨打车主</a>
+  </div>
 
-    <div class="container">
-        <h1>订阅链接生成器</h1>
-        <form id="subscriptionForm">
-            <div class="form-group">
-                <label for="airportName">机场名称</label>
-                <input type="text" class="form-control" id="airportName" placeholder="请输入机场名称" required>
-            </div>
-            <div class="form-group">
-                <label for="airportWebsite">机场官网</label>
-                <input type="url" class="form-control" id="airportWebsite" placeholder="请输入机场官网链接" required>
-            </div>
-            <button type="submit" class="btn btn-submit">生成订阅链接</button>
-        </form>
+  <script>
+    // 支持通过 URL 参数自定义车牌号和电话，例如 ?plate=沪B12345&phone=13912345678
+    const urlParams = new URLSearchParams(window.location.search);
+    const plate = urlParams.get('plate') || '粤A88888';
+    const phone = urlParams.get('phone') || '13800138000';
 
-        <div id="result" class="result mt-3">
-            <strong>生成的订阅链接:</strong>
-            <p id="generatedLink"></p>
-        </div>
-    </div>
-
-    <!-- 引入 Bootstrap JS 和 Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybC6p5Hg4o8p4k2VKjRr+/NmD2b1UlQ9p6Bmbw7d5F5y0k0kV" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0rE5NeELzH8p1y0f4d/tnmbHEP3z7jXbSyyQuOd2vPfov6Ge" crossorigin="anonymous"></script>
-
-    <script>
-        const form = document.getElementById('subscriptionForm');
-        const resultDiv = document.getElementById('result');
-        const generatedLink = document.getElementById('generatedLink');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const airportName = document.getElementById('airportName').value;
-            const airportWebsite = document.getElementById('airportWebsite').value;
-
-            try {
-                const response = await fetch('/generate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ airportName, airportWebsite }),
-                });
-                const data = await response.json();
-                if (data.success) {
-                    resultDiv.style.display = 'block';
-                    generatedLink.textContent = data.link;
-                    resultDiv.classList.remove('alert-danger');
-                    resultDiv.classList.add('alert-success');
-                } else {
-                    resultDiv.style.display = 'block';
-                    generatedLink.textContent = '生成失败，请重试。';
-                    resultDiv.classList.remove('alert-success');
-                    resultDiv.classList.add('alert-danger');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                resultDiv.style.display = 'block';
-                generatedLink.textContent = '服务器错误，请稍后重试。';
-                resultDiv.classList.remove('alert-success');
-                resultDiv.classList.add('alert-danger');
-            }
-        });
-    </script>
+    document.getElementById('plate-number').innerText = plate;
+    document.getElementById('call-link').href = 'tel:' + phone;
+  </script>
 </body>
 </html>
