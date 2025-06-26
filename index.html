@@ -2,131 +2,170 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>挪车联系页 - 科技风</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>挪车联系页</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
     body {
       margin: 0;
-      font-family: 'Orbitron', 'Helvetica Neue', sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #00fff7;
+      font-family: "Helvetica Neue", sans-serif;
+      background: linear-gradient(to bottom, #e0f7fa, #ffffff);
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
       padding: 2rem;
-      backdrop-filter: blur(10px);
+      min-height: 100vh;
     }
     .card {
-      background: rgba(10, 30, 50, 0.75);
-      border-radius: 20px;
+      background-color: white;
+      border-radius: 16px;
       padding: 2rem;
-      max-width: 400px;
+      max-width: 420px;
       width: 100%;
-      box-shadow: 0 0 10px #00fff7, 0 0 30px #00fff7 inset;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       text-align: center;
-      border: 1px solid #00fff7;
     }
-    .blinker {
-      font-weight: 900;
-      font-size: 1.4rem;
-      color: #00fff7;
-      text-shadow: 0 0 5px #00fff7, 0 0 10px #00fff7;
-      animation: blink 1.2s infinite;
-      margin-bottom: 1rem;
-      letter-spacing: 2px;
-    }
-    @keyframes blink {
-      0%, 50%, 100% { opacity: 1; }
-      25%, 75% { opacity: 0.3; }
-    }
-    .plate {
-      background: linear-gradient(90deg, #00fff7, #00838f);
-      color: #002021;
-      font-size: 2.2rem;
-      font-weight: 900;
-      padding: 0.3rem 1rem;
-      border-radius: 12px;
-      letter-spacing: 4px;
-      box-shadow: 0 0 8px #00fff7, inset 0 0 10px #004c52;
-      margin-bottom: 1rem;
-    }
-    #location, #time-now, #weather {
+    .info {
       font-size: 1rem;
-      margin-bottom: 0.8rem;
-      color: #66f8ff;
-      text-shadow: 0 0 5px #00fff7;
+      color: #333;
+      margin-bottom: 1rem;
     }
     .car-image {
-      max-width: 100%;
-      margin: 1rem 0 1.5rem;
-      border-radius: 16px;
-      border: 2px solid #00fff7;
-      box-shadow: 0 0 20px #00fff7;
+      width: 100%;
+      border-radius: 12px;
+      object-fit: contain;
+      margin-bottom: 1.5rem;
+      border: 2px solid #00bcd4;
+    }
+    .plate {
+      display: inline-block;
+      background-color: #0057a0;
+      color: white;
+      font-size: 1.8rem;
+      font-family: "Arial Black", sans-serif;
+      letter-spacing: 3px;
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: inset 0 0 6px rgba(255,255,255,0.3);
+    }
+    .message {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 1.5rem;
     }
     .call-button {
       display: inline-block;
-      background: linear-gradient(90deg, #00fff7, #00838f);
-      color: #002021;
-      font-weight: 700;
+      background-color: #00bcd4;
+      color: white;
       font-size: 1.2rem;
-      padding: 0.8rem 2rem;
-      border-radius: 14px;
+      padding: 0.75rem 2rem;
+      border-radius: 10px;
       text-decoration: none;
-      box-shadow: 0 0 15px #00fff7;
-      transition: background 0.3s ease, box-shadow 0.3s ease;
+      transition: background-color 0.2s ease;
     }
     .call-button:hover {
-      background: linear-gradient(90deg, #00b8cc, #005960);
-      box-shadow: 0 0 25px #00fff7, 0 0 40px #00fff7 inset;
-      color: #e0f7fa;
+      background-color: #0097a7;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="blinker">⚠️ 临 时 停 靠 ⚠️</div>
-    <div id="location">正在定位...</div>
-    <div id="time-now">加载时间中...</div>
-    <div id="weather">正在获取天气...</div>
-    <img class="car-image" src="car.png" alt="车辆照片" />
+    <div class="info" id="location">正在定位...</div>
+    <div class="info" id="weather">正在获取天气...</div>
+    <div class="info" id="time"></div>
+    <img class="car-image" src="car.png" alt="车辆照片">
     <div class="plate" id="plate-number">苏U·5WX81</div>
-    <div class="message" style="color:#66f8ff; margin-bottom: 2rem;">
-      您好，您的车辆影响通行，请尽快挪车，谢谢配合！
-    </div>
+    <div class="message">您好，您的车辆影响通行，请尽快挪车，谢谢配合！</div>
     <a class="call-button" id="call-link" href="tel:18917034936">📞 一键联系车主</a>
+    <audio id="bg-music" src="music.mp3" autoplay loop muted></audio>
   </div>
 
-  <!-- 背景音乐 -->
- <audio id="bg-music" src="music.mp3" autoplay loop muted></audio>
-
   <script>
+    // 车牌和电话参数
     const urlParams = new URLSearchParams(window.location.search);
     const plate = urlParams.get("plate") || "苏U·5WX81";
     const phone = urlParams.get("phone") || "18917034936";
     document.getElementById("plate-number").innerText = plate;
     document.getElementById("call-link").href = "tel:" + phone;
 
-    // 播放音乐解锁
+    // 当前时间显示
+    function updateTime() {
+      const now = new Date();
+      const timeStr = now.toLocaleString("zh-CN", { hour12: false });
+      document.getElementById("time").innerText = `当前时间：${timeStr}`;
+    }
+    updateTime();
+    setInterval(updateTime, 60000); // 每分钟更新一次
+
+    // 背景音乐解除静音
     const bgMusic = document.getElementById('bg-music');
     document.body.addEventListener('click', () => {
       bgMusic.muted = false;
       bgMusic.play();
     });
 
-    // 当前时间更新
-    function updateTime() {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
-      document.getElementById('time-now').innerText = `当前时间：${timeStr}`;
+    // 高德优先定位 + 天气信息
+    const AMapKey = '8b262d1641d61679eacb588a270dc7c0';
+    const locationEl = document.getElementById("location");
+    const weatherEl = document.getElementById("weather");
+
+    const zhMap = {
+      "China": "中国",
+      "Jiangsu": "江苏省",
+      "Suzhou": "苏州市",
+      "Nanjing": "南京市",
+      "Beijing": "北京市",
+      "Shanghai": "上海市",
+      "Guangdong": "广东省",
+      "Guangzhou": "广州市",
+      "Shenzhen": "深圳市"
+    };
+
+    function toZh(name) {
+      return zhMap[name] || name;
     }
-    updateTime();
-    setInterval(updateTime, 1000);
 
-    const amapKey = "8b262d1641d61679eacb588a270dc7c0"; // 请替换为你的真实高德 Key
+    function getLocationFromAMap() {
+      if (!navigator.geolocation) return fallbackToIP();
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          fetch(`https://restapi.amap.com/v3/geocode/regeo?output=json&location=${lon},${lat}&key=${AMapKey}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data.status === "1") {
+                const comp = data.regeocode.addressComponent;
+                const region = comp.province || "";
+                const city = comp.city || comp.province || "";
+                locationEl.innerText = `${region}${city}`;
+                getWeather(lat, lon);
+              } else {
+                fallbackToIP();
+              }
+            }).catch(fallbackToIP);
+        },
+        err => fallbackToIP(),
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    }
 
-    function fetchWeather(lat, lon) {
+    function fallbackToIP() {
+      fetch("https://api.ip.sb/geoip")
+        .then(res => res.json())
+        .then(data => {
+          const region = toZh(data.region);
+          const city = toZh(data.city);
+          locationEl.innerText = `${region}${city}`;
+          getWeather(data.latitude, data.longitude);
+        })
+        .catch(() => {
+          locationEl.innerText = "位置获取失败";
+          weatherEl.innerText = "天气信息获取失败";
+        });
+    }
+
+    function getWeather(lat, lon) {
       fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
         .then(res => res.json())
         .then(weather => {
@@ -134,77 +173,23 @@
           const temp = w.temperature;
           const wind = w.windspeed;
           const code = w.weathercode;
-
           const weatherMap = {
-            0: "晴", 1: "主要晴", 2: "局部多云", 3: "阴",
-            45: "雾", 48: "霜雾", 51: "小雨", 53: "中雨",
-            55: "大雨", 61: "小阵雨", 63: "中阵雨", 65: "大阵雨",
-            71: "小雪", 73: "中雪", 75: "大雪", 95: "雷雨"
-          };
-          const emojiMap = {
-            0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️",
-            45: "🌫️", 48: "🌁", 51: "🌧️", 53: "🌧️",
-            55: "🌧️", 61: "🌦️", 63: "🌦️", 65: "⛈️",
-            71: "🌨️", 73: "❄️", 75: "❄️", 95: "⛈️"
+            0: "晴", 1: "主要晴", 2: "局部多云", 3: "阴", 45: "雾", 48: "霜雾",
+            51: "小雨", 53: "中雨", 55: "大雨", 56: "冻雨", 57: "强冻雨",
+            61: "小阵雨", 63: "中阵雨", 65: "大阵雨", 66: "冻阵雨", 67: "强冻阵雨",
+            71: "小雪", 73: "中雪", 75: "大雪", 77: "雪粒",
+            80: "短时小雨", 81: "短时中雨", 82: "短时大雨",
+            85: "短时小雪", 86: "短时大雪", 95: "雷雨", 96: "雷雨伴冰雹", 99: "强雷雨伴冰雹"
           };
           const desc = weatherMap[code] || "天气未知";
-          const emoji = emojiMap[code] || "";
-          document.getElementById("weather").innerText = `${emoji} ${desc}，${temp}°C，风速 ${wind}km/h`;
+          weatherEl.innerText = `${desc}，${temp}°C，风速 ${wind}km/h`;
         })
         .catch(() => {
-          document.getElementById("weather").innerText = "天气信息获取失败";
+          weatherEl.innerText = "天气信息获取失败";
         });
     }
 
-    // 优先用浏览器定位 + 高德API
-    function getLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            fetch(`https://restapi.amap.com/v3/geocode/regeo?location=${lon},${lat}&key=${amapKey}&output=JSON`)
-              .then(res => res.json())
-              .then(amap => {
-                if (amap.status === "1" && amap.regeocode) {
-                  document.getElementById("location").innerText = amap.regeocode.formatted_address;
-                } else {
-                  document.getElementById("location").innerText = "位置获取失败";
-                }
-              })
-              .catch(() => {
-                document.getElementById("location").innerText = "位置获取失败";
-              });
-            fetchWeather(lat, lon);
-          },
-          (err) => {
-            console.warn("Geolocation failed:", err);
-            fallbackIP(); // Fallback
-          },
-          { enableHighAccuracy: true, timeout: 5000 }
-        );
-      } else {
-        fallbackIP();
-      }
-    }
-
-    function fallbackIP() {
-      fetch("https://api.ip.sb/geoip")
-        .then(res => res.json())
-        .then(data => {
-          const city = data.city || "";
-          const region = data.region || "";
-          document.getElementById("location").innerText = `${region}${city}`;
-          fetchWeather(data.latitude, data.longitude);
-        })
-        .catch(() => {
-          document.getElementById("location").innerText = "定位失败";
-          document.getElementById("weather").innerText = "天气信息获取失败";
-        });
-    }
-
-    // 开始定位
-    getLocation();
+    getLocationFromAMap();
   </script>
 </body>
 </html>
