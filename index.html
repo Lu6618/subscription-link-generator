@@ -3,240 +3,233 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>挪车联系页 - 科技风</title>
+  <title>挪车联系页</title>
+  <script src="https://webapi.amap.com/maps?v=2.0&key=8b262d1641d61679eacb588a270dc7c0"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
     body {
       margin: 0;
       font-family: 'Orbitron', 'Helvetica Neue', sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #00fff7;
+      background: linear-gradient(135deg, #dfe9f3, #ffffff);
+      background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+      background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 2rem;
-      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
     }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      left: -30%;
+      width: 160%;
+      height: 160%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3), transparent 70%);
+      filter: blur(80px);
+      z-index: 0;
+    }
+
     .card {
-      background: rgba(10, 30, 50, 0.75);
+      backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.15);
       border-radius: 20px;
       padding: 2rem;
       max-width: 400px;
       width: 100%;
-      box-shadow:
-        0 0 10px #00fff7,
-        0 0 30px #00fff7 inset;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       text-align: center;
-      border: 1px solid #00fff7;
       position: relative;
-      overflow: hidden;
+      z-index: 1;
+      color: #002b36;
     }
+
     .blinker {
       font-weight: 900;
-      font-size: 1.4rem;
-      color: #00fff7;
-      text-shadow:
-        0 0 5px #00fff7,
-        0 0 10px #00fff7,
-        0 0 20px #00fff7;
-      animation: blink 1.2s infinite;
+      font-size: 1.2rem;
+      color: #004c60;
+      animation: blink 1.5s infinite;
       margin-bottom: 1rem;
-      letter-spacing: 2px;
     }
+
     @keyframes blink {
       0%, 50%, 100% { opacity: 1; }
-      25%, 75% { opacity: 0.3; }
+      25%, 75% { opacity: 0.4; }
     }
+
     .plate {
-      background: linear-gradient(90deg, #00fff7, #00838f);
-      color: #002021;
+      background: linear-gradient(to bottom, #0051ba, #003d94);
+      color: white;
       font-size: 2.2rem;
       font-weight: 900;
-      padding: 0.3rem 1rem;
-      border-radius: 12px;
-      letter-spacing: 4px;
-      box-shadow:
-        0 0 8px #00fff7,
-        inset 0 0 10px #004c52;
-      margin-bottom: 1rem;
+      padding: 0.6rem 1.4rem;
+      border-radius: 8px;
+      letter-spacing: 8px;
+      border: 3px solid white;
+      box-shadow: 0 0 5px rgba(0,0,0,0.4), inset 0 0 8px rgba(255,255,255,0.2);
+      margin-bottom: 1.5rem;
       user-select: none;
+      font-family: 'SimHei', 'Orbitron', 'Helvetica Neue', sans-serif;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    #weather {
-      font-size: 1rem;
-      margin-bottom: 1.2rem;
-      color: #66f8ff;
-      text-shadow: 0 0 5px #00fff7;
-    }
-    #location {
-      font-size: 1rem;
-      margin-bottom: 0.6rem;
-      color: #99ffff;
-      user-select: none;
-    }
+
+    #location,
+    #weather,
     #time-now {
       font-size: 1rem;
-      color: #77e1ff;
-      margin-bottom: 1rem;
+      color: #003b4a;
+      margin-bottom: 0.6rem;
+      text-shadow: 0 0 2px rgba(255,255,255,0.5);
       user-select: none;
     }
+
     .call-button {
       display: inline-block;
-      background: linear-gradient(90deg, #00fff7, #00838f);
-      color: #002021;
+      background: rgba(255, 255, 255, 0.25);
+      color: #004b50;
       font-weight: 700;
-      font-size: 1.2rem;
-      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+      padding: 0.7rem 2rem;
       border-radius: 14px;
       text-decoration: none;
-      box-shadow:
-        0 0 15px #00fff7;
-      transition: background 0.3s ease, box-shadow 0.3s ease;
-      user-select: none;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.4);
+      transition: all 0.3s ease;
     }
+
     .call-button:hover {
-      background: linear-gradient(90deg, #00b8cc, #005960);
-      box-shadow:
-        0 0 25px #00fff7,
-        0 0 40px #00fff7 inset;
-      color: #e0f7fa;
+      background: rgba(255,255,255,0.4);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      color: #000;
     }
+
     .car-image {
       max-width: 100%;
       margin: 1rem 0 1.5rem;
       border-radius: 16px;
-      border: 2px solid #00fff7;
-      box-shadow: 0 0 20px #00fff7;
+      border: 2px solid rgba(255,255,255,0.5);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       user-select: none;
     }
-    #map-link {
-      color: #00e0ff;
-      text-decoration: underline;
-      font-size: 0.9rem;
-      display: block;
-      margin-bottom: 1.5rem;
-      user-select: none;
-    }
-    #map-link:hover {
-      color: #0099aa;
+
+    .message {
+      color: #004b50;
+      margin-bottom: 2rem;
+      font-weight: 500;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="blinker">⚠️ 车辆影响通行，请尽快挪车 ⚠️</div>
-    <div id="location">正在定位...</div>
-    <a id="map-link" href="#" target="_blank" rel="noopener">📍 查看地图</a>
+    <div class="blinker">⚠️ 临时停靠，敬请谅解 ⚠️</div>
+    <div id="location">正在获取地理位置信息...</div>
     <div id="weather">正在获取天气...</div>
+    <div id="time-now">正在获取时间...</div>
     <img class="car-image" src="car.png" alt="车辆照片" />
     <div class="plate" id="plate-number">苏U·5WX81</div>
-    <div class="message" style="color:#66f8ff; margin-bottom: 2rem;">
-      您好，您的车辆影响通行，请尽快挪车，谢谢配合！
-    </div>
-    <a class="call-button" id="call-link" href="tel:13800138000">📞 一键联系车主</a>
-    <div id="time-now"></div>
+    <div class="message">如影响通行</div>
+    <div class="message">请点击下方按钮联系我</div>
+    <a class="call-button" id="call-link" href="tel:18917034936">📞 联系车主</a>
   </div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const plate = urlParams.get("plate") || "苏U·5WX81";
-    const phone = urlParams.get("phone") || "13800138000";
+    const phone = urlParams.get("phone") || "18917034936";
     document.getElementById("plate-number").innerText = plate;
     document.getElementById("call-link").href = "tel:" + phone;
 
-    // 定位和地图链接
-    fetch("https://api.ip.sb/geoip")
-      .then(res => res.json())
-      .then(data => {
-        const zhMap = {
-          "China": "中国",
-          "Jiangsu": "江苏省",
-          "Suzhou": "苏州市",
-          "Beijing": "北京市",
-          "Shanghai": "上海市",
-          "Guangdong": "广东省",
-          "Guangzhou": "广州市",
-          "Shenzhen": "深圳市"
-        };
-        function toZh(name) {
-          return zhMap[name] || name;
-        }
-        const region = toZh(data.region);
-        const city = toZh(data.city);
-        document.getElementById("location").innerText = `${region}${city}`;
-        document.getElementById("map-link").href = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
-
-        // 获取天气
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${data.latitude}&longitude=${data.longitude}&current_weather=true`)
-          .then(res => res.json())
-          .then(weather => {
-            const w = weather.current_weather;
-            const temp = w.temperature;
-            const wind = w.windspeed;
-            const code = w.weathercode;
-
-            const weatherMap = {
-              0: "晴",
-              1: "主要晴",
-              2: "局部多云",
-              3: "阴",
-              45: "雾",
-              48: "霜雾",
-              51: "小雨",
-              53: "中雨",
-              55: "大雨",
-              61: "小阵雨",
-              63: "中阵雨",
-              65: "大阵雨",
-              71: "小雪",
-              73: "中雪",
-              75: "大雪",
-              95: "雷雨"
-            };
-
-            const weatherEmojis = {
-              0: "☀️",
-              1: "🌤️",
-              2: "⛅",
-              3: "☁️",
-              45: "🌫️",
-              48: "🌁",
-              51: "🌧️",
-              53: "🌧️",
-              55: "🌧️",
-              61: "🌦️",
-              63: "🌦️",
-              65: "⛈️",
-              71: "🌨️",
-              73: "❄️",
-              75: "❄️",
-              95: "🌩️"
-            };
-
-            const desc = weatherMap[code] || "未知天气";
-            const emoji = weatherEmojis[code] || "🌈";
-            document.getElementById("weather").innerText = `${emoji} ${desc}，${temp}°C，风速 ${wind}km/h`;
-          })
-          .catch(() => {
-            document.getElementById("weather").innerText = "天气信息获取失败";
-          });
-      })
-      .catch(() => {
-        document.getElementById("location").innerText = "位置获取失败";
-        document.getElementById("weather").innerText = "天气信息获取失败";
-      });
-
-    // 当前时间显示
     function updateTime() {
       const now = new Date();
+      const y = now.getFullYear();
+      const mo = (now.getMonth() + 1).toString().padStart(2, '0');
+      const d = now.getDate().toString().padStart(2, '0');
       const h = now.getHours().toString().padStart(2, '0');
       const m = now.getMinutes().toString().padStart(2, '0');
       const s = now.getSeconds().toString().padStart(2, '0');
-      document.getElementById("time-now").innerText = `当前时间：${h}:${m}:${s}`;
+      document.getElementById("time-now").innerText = `${y}-${mo}-${d} ${h}:${m}:${s}`;
     }
     setInterval(updateTime, 1000);
     updateTime();
+
+    function getWeatherByCoords(lat, lon) {
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+        .then(res => res.json())
+        .then(weather => {
+          const w = weather.current_weather;
+          const temp = w.temperature;
+          const wind = w.windspeed;
+          const code = w.weathercode;
+
+          const weatherMap = {
+            0: "晴", 1: "主要晴", 2: "局部多云", 3: "阴", 45: "雾", 48: "霜雾",
+            51: "小雨", 53: "中雨", 55: "大雨", 61: "小阵雨", 63: "中阵雨", 65: "大阵雨",
+            71: "小雪", 73: "中雪", 75: "大雪", 95: "雷雨"
+          };
+          const weatherEmojis = {
+            0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 45: "🌫️", 48: "🌁",
+            51: "🌧️", 53: "🌧️", 55: "🌧️", 61: "🌦️", 63: "🌦️", 65: "⛈️",
+            71: "🌨️", 73: "❄️", 75: "❄️", 95: "🌩️"
+          };
+
+          const desc = weatherMap[code] || "未知天气";
+          const emoji = weatherEmojis[code] || "🌈";
+          document.getElementById("weather").innerText = `${emoji} ${desc}，${temp}°C，风速 ${wind}km/h`;
+        })
+        .catch(() => {
+          document.getElementById("weather").innerText = "天气信息获取失败";
+        });
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          getWeatherByCoords(lat, lon);
+
+          const geocoder = new AMap.Geocoder();
+          geocoder.getAddress([lon, lat], function(status, result) {
+            if (status === 'complete' && result.regeocode) {
+              const comp = result.regeocode.addressComponent;
+              document.getElementById("location").innerText = `${comp.province}${comp.city || ''}${comp.district || ''}`;
+            } else {
+              document.getElementById("location").innerText = "位置解析失败";
+            }
+          });
+        }, function() {
+          fallbackToIP();
+        }, { enableHighAccuracy: true, timeout: 5000 });
+      } else {
+        fallbackToIP();
+      }
+    }
+
+    function fallbackToIP() {
+      fetch("https://api.ip.sb/geoip")
+        .then(res => res.json())
+        .then(data => {
+          const region = data.region || "";
+          const city = data.city || "";
+          document.getElementById("location").innerText = `${region}${city}`;
+          getWeatherByCoords(data.latitude, data.longitude);
+        })
+        .catch(() => {
+          document.getElementById("location").innerText = "位置获取失败";
+          document.getElementById("weather").innerText = "天气信息获取失败";
+        });
+    }
+
+    getLocation();
   </script>
 </body>
 </html>
