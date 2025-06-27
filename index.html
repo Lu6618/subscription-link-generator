@@ -20,7 +20,7 @@
       min-height: 100vh;
       padding: 2rem;
       position: relative;
-      overflow: hidden;
+      overflow: auto;
     }
 
     body::before {
@@ -40,7 +40,7 @@
       background: rgba(255, 255, 255, 0.15);
       border-radius: 20px;
       padding: 2rem;
-      max-width: 400px;
+      max-width: 420px;
       width: 100%;
       box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -104,7 +104,7 @@
       backdrop-filter: blur(5px);
       border: 1px solid rgba(255,255,255,0.4);
       transition: all 0.3s ease;
-      margin-top: 1rem;
+      margin: 0.6rem auto;
     }
 
     .call-button:hover {
@@ -124,22 +124,8 @@
 
     .message {
       color: #004b50;
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
       font-weight: 500;
-    }
-
-    #video-container {
-      margin-top: 2rem;
-      width: 100%;
-      max-width: 480px;
-    }
-
-    #random-video {
-      width: 100%;
-      height: 270px;
-      border-radius: 16px;
-      display: none;
-      border: none;
     }
   </style>
 </head>
@@ -153,11 +139,7 @@
     <div class="plate" id="plate-number">苏U·5WX81</div>
     <div class="message">如影响通行，请点击下方按钮通知我。</div>
     <a class="call-button" id="call-link" href="tel:18917034936">📞 联系车主</a>
-    <a class="call-button" href="javascript:void(0);" onclick="loadRandomVideo()">🎥 随机看美女视频</a>
-  </div>
-
-  <div id="video-container">
-    <iframe id="random-video" allowfullscreen></iframe>
+    <a class="call-button" href="https://api.qemao.com/api/douyin/" target="_blank">我已通知，等待挪车</a>
   </div>
 
   <script>
@@ -246,12 +228,6 @@
           document.getElementById("location").innerText = "位置获取失败";
           document.getElementById("weather").innerText = "天气信息获取失败";
         });
-    }
-
-    function loadRandomVideo() {
-      const iframe = document.getElementById("random-video");
-      iframe.src = "http://api.qemao.com/api/douyin/";
-      iframe.style.display = "block";
     }
 
     getLocation();
